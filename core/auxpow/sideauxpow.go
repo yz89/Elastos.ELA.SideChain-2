@@ -1,7 +1,6 @@
 package auxpow
 
 import (
-	"ELA/core/auxpow"
 	"io"
 
 	. "Elastos.ELA.SideChain/common"
@@ -13,7 +12,6 @@ type SideAuxPow struct {
 	SideAuxMerkleIndex  int
 	SideAuxBlockTx      ElaTx
 	MainBlockHeader     ElaBlockHeader
-	AuxPow              AuxPow
 }
 
 func NewSideAuxPow(sideAuxMerkleBranch []Uint256,
@@ -98,7 +96,7 @@ func (sap *SideAuxPow) Deserialize(r io.Reader) error {
 
 func (sap *SideAuxPow) SideAuxPowCheck(hashAuxBlock Uint256) bool {
 	mainBlockHeader := sap.MainBlockHeader
-	if !mainBlockHeader.AuxPow.Check(mainBlockHeader.Hash(), auxpow.AuxPowChainID) {
+	if !mainBlockHeader.AuxPow.Check(mainBlockHeader.Hash(), AuxPowChainID) {
 		return false
 	}
 
@@ -108,7 +106,8 @@ func (sap *SideAuxPow) SideAuxPowCheck(hashAuxBlock Uint256) bool {
 	}
 
 	payloadData := sap.SideAuxBlockTx.Payload.Data(SideMiningPayloadVersion)
-	payloadHash, err := Uint256ParseFromBytes(payloadData)
+	payloadHashData := payloadData[0:32]
+	payloadHash, err := Uint256ParseFromBytes(payloadHashData)
 	if err != nil {
 		return false
 	}
